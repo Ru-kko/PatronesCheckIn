@@ -6,51 +6,60 @@
 // ============================================================
 
 import logger from "./Logger";
-import { OnTimeState, BoardingState, CancelledState } from "./FlightStates";
+import { FlightState, OnTimeState, FlightInterface } from "./FlightStates";
 
-class FlightSubject {
-  constructor(flightNumber) {
+interface Observer {
+  name: string;
+  update: (event: any) => void;
+}
+
+class FlightSubject implements FlightInterface {
+  flightNumber: string;
+  private observers: Observer[] = [];
+  private state: FlightState;
+  status: string;
+
+  constructor(flightNumber: string) {
     this.flightNumber = flightNumber;
-    this.observers = [];
     this.state = new OnTimeState();
     this.status = this.state.getStatus();
   }
 
-  setState(state) {
+  setState(state: FlightState): void {
     this.state = state;
     this.status = state.getStatus();
   }
 
-  subscribe(observer) {
+  getStatus(): string {
+    return this.status;
+  }
+
+  subscribe(observer: Observer): void {
     this.observers.push(observer);
   }
 
-  unsubscribe(name) {
+  unsubscribe(name: string): void {
     this.observers = this.observers.filter((o) => o.name !== name);
   }
 
-  notify(event) {
+  notify(event: any): void {
     this.observers.forEach((o) => o.update(event));
   }
 
-  delay(minutes) {
+  delay(minutes: number): void {
     this.state.delay(this, minutes);
   }
 
-  onTime() {
+  onTime(): void {
     this.state.onTime(this);
   }
 
-  startBoarding() {
+  startBoarding(): void {
     this.state.startBoarding(this);
   }
 
-  cancel() {
+  cancel(): void {
     this.state.cancel(this);
-  }
-
-  getStatus() {
-    return this.status;
   }
 }
 

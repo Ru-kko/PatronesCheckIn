@@ -5,7 +5,16 @@
 // conserva todos los registros porque es una única instancia.
 // ============================================================
 
-export default function LogPanel({ logs }) {
+interface LogEntry {
+  time: string;
+  msg: string;
+}
+
+interface LogPanelProps {
+  logs: LogEntry[];
+}
+
+export default function LogPanel({ logs }: LogPanelProps) {
   return (
     <div style={{
       background: "#0f172a",

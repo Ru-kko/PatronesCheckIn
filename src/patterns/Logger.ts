@@ -4,24 +4,31 @@
 // No importa cuántas veces se importe, siempre es el mismo objeto.
 // ============================================================
 
+interface LogEntry {
+  time: string;
+  msg: string;
+}
+
 class Logger {
+  private static instance: Logger;
+  private logs: LogEntry[] = [];
+
   constructor() {
     if (Logger.instance) return Logger.instance;
-    this.logs = [];
     Logger.instance = this;
   }
 
-  log(msg) {
-    const entry = { time: new Date().toLocaleTimeString(), msg };
+  log(msg: string): LogEntry {
+    const entry: LogEntry = { time: new Date().toLocaleTimeString(), msg };
     this.logs.push(entry);
     return entry;
   }
 
-  getLogs() {
+  getLogs(): LogEntry[] {
     return this.logs;
   }
 
-  clear() {
+  clear(): void {
     this.logs = [];
   }
 }

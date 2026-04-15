@@ -5,20 +5,33 @@
 // ============================================================
 
 import logger from "./Logger";
+import { Passenger } from "./PassengerFactory";
 
-class CheckInHandler {
-  setNext(handler) {
+interface ValidationResult {
+  ok: boolean;
+  message: string;
+}
+
+interface CheckInRequest {
+  passenger: Passenger;
+  flightStatus: string;
+}
+
+abstract class CheckInHandler {
+  protected next: CheckInHandler | null = null;
+
+  setNext(handler: CheckInHandler): CheckInHandler {
     this.next = handler;
     return handler;
   }
 
-  handle(request) {
+  handle(request: CheckInRequest): ValidationResult {
     return this.next ? this.next.handle(request) : { ok: true, message: "[CHAIN] Check-in aprobado." };
   }
 }
 
 class AlreadyCheckedInHandler extends CheckInHandler {
-  handle(request) {
+  handle(request: CheckInRequest): ValidationResult {
     if (request.passenger.checkedIn) {
       return {
         ok: false,
@@ -30,7 +43,7 @@ class AlreadyCheckedInHandler extends CheckInHandler {
 }
 
 class DelayPriorityHandler extends CheckInHandler {
-  handle(request) {
+  handle(request: CheckInRequest): ValidationResult {
     const { passenger, flightStatus } = request;
     if (flightStatus.includes("Retrasado") && passenger.type === "regular") {
       return {
@@ -43,7 +56,7 @@ class DelayPriorityHandler extends CheckInHandler {
 }
 
 class FinalCheckInHandler extends CheckInHandler {
-  handle(request) {
+  handle(request: CheckInRequest): ValidationResult {
     return {
       ok: true,
       message: `[CHAIN] ${request.passenger.name} cumple con todas las validaciones de check-in.`,
@@ -52,6 +65,8 @@ class FinalCheckInHandler extends CheckInHandler {
 }
 
 class CheckInChain {
+  private first: CheckInHandler;
+
   constructor() {
     const already = new AlreadyCheckedInHandler();
     const delayRule = new DelayPriorityHandler();
@@ -61,7 +76,7 @@ class CheckInChain {
     this.first = already;
   }
 
-  validate(passenger, flightStatus) {
+  validate(passenger: Passenger, flightStatus: string): ValidationResult {
     const result = this.first.handle({ passenger, flightStatus });
     logger.log(result.message);
     return result;

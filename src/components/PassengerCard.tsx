@@ -5,8 +5,16 @@
 // ============================================================
 
 import CheckInStrategies from "../patterns/CheckInStrategies";
+import { Passenger } from "../patterns/PassengerFactory";
 
-export default function PassengerCard({ passenger, selectedStrategy, flightStatus, mediator }) {
+interface PassengerCardProps {
+  passenger: Passenger;
+  selectedStrategy: string;
+  flightStatus: string;
+  mediator: any; // Could type this better, but for now any
+}
+
+export default function PassengerCard({ passenger, selectedStrategy, flightStatus, mediator }: PassengerCardProps) {
   const strategy = CheckInStrategies[selectedStrategy];
 
   const handleCheckIn = () => {
@@ -18,7 +26,7 @@ export default function PassengerCard({ passenger, selectedStrategy, flightStatu
     });
   };
 
-  const priorityColors = {
+  const priorityColors: Record<number, string> = {
     1: "#fbbf24", // VIP - dorado
     2: "#7dd3fc", // Crew - azul
     3: "#94a3b8", // Regular - gris

@@ -20,24 +20,34 @@
 import logger from "./Logger";
 import CheckInStrategies from "./CheckInStrategies";
 import checkInChain from "./CheckInChain";
+import { Passenger } from "./PassengerFactory";
+import FlightSubject from "./FlightSubject";
+
+interface MediatorCallbacks {
+  onPassengersChange?: (updater: (prev: Passenger[]) => Passenger[]) => void;
+  onCheckInResult?: (msg: string) => void;
+  onStatusChange?: (status: string) => void;
+}
 
 class FlightMediator {
-  constructor(flight) {
+  private flight: FlightSubject;
+  private onPassengersChange?: (updater: (prev: Passenger[]) => Passenger[]) => void;
+  private onCheckInResult?: (msg: string) => void;
+  private onStatusChange?: (status: string) => void;
+
+  constructor(flight: FlightSubject) {
     this.flight = flight;
-    this.onPassengersChange = null; // callback para actualizar React state
-    this.onCheckInResult = null;
-    this.onStatusChange = null;
   }
 
   // Registrar callbacks desde el componente React
-  register({ onPassengersChange, onCheckInResult, onStatusChange }) {
+  register({ onPassengersChange, onCheckInResult, onStatusChange }: MediatorCallbacks): void {
     this.onPassengersChange = onPassengersChange;
     this.onCheckInResult = onCheckInResult;
     this.onStatusChange = onStatusChange;
   }
 
   // Punto único de entrada para todos los eventos del sistema
-  notify(sender, event, payload = {}) {
+  notify(sender: string, event: string, payload: any = {}): void {
     logger.log(`[MEDIATOR] Evento recibido de "${sender}": ${event}`);
 
     switch (event) {

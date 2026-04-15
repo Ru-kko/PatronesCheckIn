@@ -6,7 +6,12 @@
 
 import { useState } from "react";
 
-export default function FlightControl({ mediator, flightStatus }) {
+interface FlightControlProps {
+  mediator: any; // Could type better
+  flightStatus: string;
+}
+
+export default function FlightControl({ mediator, flightStatus }: FlightControlProps) {
   const [delayMinutes, setDelayMinutes] = useState(30);
 
   const getPatternColor = () => {

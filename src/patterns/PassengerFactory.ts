@@ -12,8 +12,21 @@
 
 import logger from "./Logger";
 
+export interface Passenger {
+  name: string;
+  type: string;
+  checkedIn: boolean;
+  notification: string | null;
+  createdAt: string;
+  label: string;
+  badge: string;
+  priority: number;
+}
+
+type PassengerType = "regular" | "vip" | "crew";
+
 const PassengerFactory = {
-  create(name, type = "regular") {
+  create(name: string, type: PassengerType = "regular"): Passenger {
     const base = {
       name,
       type,
@@ -22,7 +35,7 @@ const PassengerFactory = {
       createdAt: new Date().toLocaleTimeString(),
     };
 
-    const configs = {
+    const configs: Record<PassengerType, Omit<Passenger, keyof typeof base>> = {
       regular: {
         label: "Pasajero",
         badge: "🧑",
@@ -41,7 +54,7 @@ const PassengerFactory = {
     };
 
     const config = configs[type] ?? configs.regular;
-    const passenger = { ...base, ...config };
+    const passenger: Passenger = { ...base, ...config };
 
     logger.log(`[FACTORY] Pasajero creado: ${name} (${config.label})`);
     return passenger;

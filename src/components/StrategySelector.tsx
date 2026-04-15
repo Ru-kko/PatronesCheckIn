@@ -6,7 +6,12 @@
 
 import CheckInStrategies from "../patterns/CheckInStrategies";
 
-export default function StrategySelector({ selected, onChange }) {
+interface StrategySelectorProps {
+  selected: string;
+  onChange: (strategy: string) => void;
+}
+
+export default function StrategySelector({ selected, onChange }: StrategySelectorProps) {
   return (
     <div style={{
       background: "#0f172a",

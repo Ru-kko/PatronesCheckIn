@@ -7,11 +7,17 @@
 
 import logger from "./Logger";
 
-const CheckInStrategies = {
+export interface CheckInStrategy {
+  label: string;
+  icon: string;
+  execute: (passenger: string) => string;
+}
+
+const CheckInStrategies: Record<string, CheckInStrategy> = {
   online: {
     label: "Online",
     icon: "🌐",
-    execute: (passenger) => {
+    execute: (passenger: string) => {
       const msg = `[ONLINE] ${passenger} hizo check-in online. Asiento asignado automáticamente.`;
       logger.log(msg);
       return msg;
@@ -20,7 +26,7 @@ const CheckInStrategies = {
   kiosk: {
     label: "Kiosk",
     icon: "🖥️",
-    execute: (passenger) => {
+    execute: (passenger: string) => {
       const msg = `[KIOSK] ${passenger} usó el kiosk del aeropuerto. Tarjeta de embarque impresa.`;
       logger.log(msg);
       return msg;
@@ -29,7 +35,7 @@ const CheckInStrategies = {
   counter: {
     label: "Mostrador",
     icon: "🧑‍✈️",
-    execute: (passenger) => {
+    execute: (passenger: string) => {
       const msg = `[MOSTRADOR] ${passenger} hizo check-in en ventanilla con agente.`;
       logger.log(msg);
       return msg;

@@ -7,56 +7,54 @@
 
 import logger from "./Logger";
 
-class FlightState {
-  constructor(label) {
+export interface FlightInterface {
+  flightNumber: string;
+  setState(state: FlightState): void;
+  getStatus(): string;
+  notify(event: any): void;
+}
+
+export abstract class FlightState {
+  protected label: string;
+
+  constructor(label: string) {
     this.label = label;
   }
 
-  delay(flight, minutes) {
-    throw new Error("Method 'delay' must be implemented.");
-  }
+  abstract delay(flight: FlightInterface, minutes: number): void;
+  abstract onTime(flight: FlightInterface): void;
+  abstract startBoarding(flight: FlightInterface): void;
+  abstract cancel(flight: FlightInterface): void;
 
-  onTime(flight) {
-    throw new Error("Method 'onTime' must be implemented.");
-  }
-
-  startBoarding(flight) {
-    throw new Error("Method 'startBoarding' must be implemented.");
-  }
-
-  cancel(flight) {
-    throw new Error("Method 'cancel' must be implemented.");
-  }
-
-  getStatus() {
+  getStatus(): string {
     return this.label;
   }
 }
 
-class OnTimeState extends FlightState {
+export class OnTimeState extends FlightState {
   constructor() {
     super("A tiempo");
   }
 
-  delay(flight, minutes) {
+  delay(flight: FlightInterface, minutes: number): void {
     flight.setState(new DelayedState(minutes));
     const event = { type: "DELAY", minutes, status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
     flight.notify(event);
   }
 
-  onTime(flight) {
+  onTime(flight: FlightInterface): void {
     logger.log(`[VUELO ${flight.flightNumber}] El vuelo ya estaba a tiempo.`);
   }
 
-  startBoarding(flight) {
+  startBoarding(flight: FlightInterface): void {
     flight.setState(new BoardingState());
     const event = { type: "BOARDING", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
     flight.notify(event);
   }
 
-  cancel(flight) {
+  cancel(flight: FlightInterface): void {
     flight.setState(new CancelledState());
     const event = { type: "CANCELLED", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
@@ -64,34 +62,36 @@ class OnTimeState extends FlightState {
   }
 }
 
-class DelayedState extends FlightState {
-  constructor(minutes) {
+export class DelayedState extends FlightState {
+  private minutes: number;
+
+  constructor(minutes: number) {
     super(`Retrasado ${minutes} min`);
     this.minutes = minutes;
   }
 
-  delay(flight, minutes) {
+  delay(flight: FlightInterface, minutes: number): void {
     flight.setState(new DelayedState(minutes));
     const event = { type: "DELAY", minutes, status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Nuevo estado: ${flight.getStatus()}`);
     flight.notify(event);
   }
 
-  onTime(flight) {
+  onTime(flight: FlightInterface): void {
     flight.setState(new OnTimeState());
     const event = { type: "ON_TIME", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Vuelo normalizado.`);
     flight.notify(event);
   }
 
-  startBoarding(flight) {
+  startBoarding(flight: FlightInterface): void {
     flight.setState(new BoardingState());
     const event = { type: "BOARDING", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
     flight.notify(event);
   }
 
-  cancel(flight) {
+  cancel(flight: FlightInterface): void {
     flight.setState(new CancelledState());
     const event = { type: "CANCELLED", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
@@ -99,30 +99,30 @@ class DelayedState extends FlightState {
   }
 }
 
-class BoardingState extends FlightState {
+export class BoardingState extends FlightState {
   constructor() {
     super("Embarcando");
   }
 
-  delay(flight, minutes) {
+  delay(flight: FlightInterface, minutes: number): void {
     flight.setState(new DelayedState(minutes));
     const event = { type: "DELAY", minutes, status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
     flight.notify(event);
   }
 
-  onTime(flight) {
+  onTime(flight: FlightInterface): void {
     flight.setState(new OnTimeState());
     const event = { type: "ON_TIME", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Vuelo normalizado.`);
     flight.notify(event);
   }
 
-  startBoarding(flight) {
+  startBoarding(flight: FlightInterface): void {
     logger.log(`[VUELO ${flight.flightNumber}] El vuelo ya está embarcando.`);
   }
 
-  cancel(flight) {
+  cancel(flight: FlightInterface): void {
     flight.setState(new CancelledState());
     const event = { type: "CANCELLED", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Estado: ${flight.getStatus()}`);
@@ -130,29 +130,28 @@ class BoardingState extends FlightState {
   }
 }
 
-class CancelledState extends FlightState {
+export class CancelledState extends FlightState {
   constructor() {
     super("Cancelado");
   }
 
-  delay(flight, minutes) {
+  delay(flight: FlightInterface, minutes: number): void {
     logger.log(`[VUELO ${flight.flightNumber}] Vuelo cancelado, no se puede retrasar.`);
   }
 
-  onTime(flight) {
+  onTime(flight: FlightInterface): void {
     flight.setState(new OnTimeState());
     const event = { type: "ON_TIME", status: flight.getStatus() };
     logger.log(`[VUELO ${flight.flightNumber}] Vuelo reactivado.`);
     flight.notify(event);
   }
 
-  startBoarding(flight) {
+  startBoarding(flight: FlightInterface): void {
     logger.log(`[VUELO ${flight.flightNumber}] No se puede embarcar un vuelo cancelado.`);
   }
 
-  cancel(flight) {
+  cancel(flight: FlightInterface): void {
     logger.log(`[VUELO ${flight.flightNumber}] El vuelo ya está cancelado.`);
   }
 }
 
-export { FlightState, OnTimeState, DelayedState, BoardingState, CancelledState };
