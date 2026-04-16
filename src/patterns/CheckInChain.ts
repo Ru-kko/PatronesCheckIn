@@ -55,6 +55,19 @@ class DelayPriorityHandler extends CheckInHandler {
   }
 }
 
+class CancelledFlightHandler extends CheckInHandler {
+  handle(request: CheckInRequest): ValidationResult {
+    const { flightStatus } = request;
+    if (flightStatus === "Cancelado") {
+      return {
+        ok: false,
+        message: `[CHAIN] No se puede hacer check-in: el vuelo está cancelado.`,
+      };
+    }
+    return super.handle(request);
+  }
+}
+
 class FinalCheckInHandler extends CheckInHandler {
   handle(request: CheckInRequest): ValidationResult {
     return {
@@ -70,9 +83,10 @@ class CheckInChain {
   constructor() {
     const already = new AlreadyCheckedInHandler();
     const delayRule = new DelayPriorityHandler();
+    const cancelledRule = new CancelledFlightHandler();
     const finalStep = new FinalCheckInHandler();
 
-    already.setNext(delayRule).setNext(finalStep);
+    already.setNext(delayRule).setNext(cancelledRule).setNext(finalStep);
     this.first = already;
   }
 

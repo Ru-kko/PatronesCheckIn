@@ -25,7 +25,7 @@ import LogPanel from "./components/LogPanel";
 const INITIAL_PASSENGERS = [
   PassengerFactory.create("Ana García", "vip"),
   PassengerFactory.create("Carlos Ruiz", "regular"),
-  PassengerFactory.create("María López", "crew"),
+  PassengerFactory.create("María López", "tripulacion"),
 ];
 
 export default function App() {
@@ -252,7 +252,7 @@ export default function App() {
               >
                 <option value="regular">🧑 Regular</option>
                 <option value="vip">⭐ VIP</option>
-                <option value="crew">🧑‍✈️ Crew</option>
+                <option value="crew">🧑‍✈️ Tripulación</option>
               </select>
               <button
                 onClick={addPassenger}
@@ -292,7 +292,7 @@ export default function App() {
         <span><span style={{ color: "#0d6efd" }}>●</span> STRATEGY: Algoritmo de check-in intercambiable</span>
         <span><span style={{ color: "#f97316" }}>●</span> OBSERVER: Vuelo notifica a todos los pasajeros</span>
         <span><span style={{ color: "#fbbf24" }}>●</span> SINGLETON: Logger con instancia única global</span>
-        <span><span style={{ color: "#4ade80" }}>●</span> FACTORY: Crea pasajeros tipificados (Regular/VIP/Crew)</span>
+        <span><span style={{ color: "#4ade80" }}>●</span> FACTORY: Crea pasajeros tipificados (Regular/VIP/Tripulación)</span>
         <span><span style={{ color: "#f472b6" }}>●</span> MEDIATOR: Desacopla la comunicación entre módulos</span>
         <span><span style={{ color: "#22c55e" }}>●</span> STATE: El vuelo cambia de estado con objetos dedicados</span>
         <span><span style={{ color: "#f472b6" }}>●</span> CHAIN: Validaciones de check-in encadenadas</span>

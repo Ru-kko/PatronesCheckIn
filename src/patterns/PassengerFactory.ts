@@ -7,7 +7,7 @@
 // Ventaja: si el objeto Passenger cambia (nuevos campos, validaciones),
 // solo se modifica este archivo.
 //
-// Tipos soportados: "regular", "vip", "crew"
+// Tipos soportados: "regular", "vip", "tripulacion"
 // ============================================================
 
 import logger from "./Logger";
@@ -23,7 +23,7 @@ export interface Passenger {
   priority: number;
 }
 
-type PassengerType = "regular" | "vip" | "crew";
+type PassengerType = "regular" | "vip" | "tripulacion";
 
 const PassengerFactory = {
   create(name: string, type: PassengerType = "regular"): Passenger {
@@ -46,7 +46,7 @@ const PassengerFactory = {
         badge: "⭐",
         priority: 1,
       },
-      crew: {
+      tripulacion: {
         label: "Tripulación",
         badge: "🧑‍✈️",
         priority: 2,

@@ -28,7 +28,7 @@ export default function PassengerCard({ passenger, selectedStrategy, flightStatu
 
   const priorityColors: Record<number, string> = {
     1: "#fbbf24", // VIP - dorado
-    2: "#7dd3fc", // Crew - azul
+    2: "#7dd3fc", // Tripulación - azul
     3: "#94a3b8", // Regular - gris
   };
 
